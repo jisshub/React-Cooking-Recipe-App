@@ -148,7 +148,7 @@ export default function RecipeList({recipes}) {
                     <h3>{recipe.title}</h3>
                     <p>{recipe.cookingTime} to make.</p>
                     <div>{recipe.method.substring(0,100)}...</div>
-                    <Link to={`/recipe/${recipe.id}`}>Cook this</Link>
+                    <Link to={`/recipes/${recipe.id}`}>Cook this</Link>
                 </div>
             ))}
         </div>
@@ -156,3 +156,49 @@ export default function RecipeList({recipes}) {
   )
 }
 ```
+
+## Fetching a Single Recipe
+
+- Show single recipe details on Recipe component.
+- Extract the route for single recipe.
+- We use **useParams** hook to fetch id from url.
+
+```js
+export default function Recipe() {
+
+    // useParams hook to fetch id from url.
+  const {id} = useParams();
+
+//   construct endpoint to fetch the data from db.json file.
+  const url = `http://localhost:3000/recipes/${id}`;
+
+//   get data using useFetch
+  const {data: recipe, isPending, error} = useFetch(url);
+  return (
+    <div className="recipe">
+    // ouput loading message if data is not fetched yet.
+      {isPending && <p>Loading...</p>}
+      {error && <p>{error}</p>}
+    //   output the recipe details if data is fetched.
+      {recipe && (
+        <div className='recipe'>
+          <h2>{recipe.title}</h2>
+          <p>{recipe.cookingTime} to make.</p>
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+Abort error issue
+
+Figured it.
+
+useFetch(url, ref), where ref is a useRef defined in the component where useFetch() is invoked. Use ref.current to check if the component is still mounted in the catch block, and ensure that ref.current is set to false in the clean-up function.
+
+next: https://www.udemy.com/course/build-web-apps-with-react-firebase/learn/lecture/29067040#questions
+
+
+
+
