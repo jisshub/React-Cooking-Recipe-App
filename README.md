@@ -191,14 +191,119 @@ export default function Recipe() {
 }
 ```
 
-Abort error issue
+## Recipe Details Template
 
-Figured it.
+**Recipe.js**
 
-useFetch(url, ref), where ref is a useRef defined in the component where useFetch() is invoked. Use ref.current to check if the component is still mounted in the catch block, and ensure that ref.current is set to false in the clean-up function.
+```js
+export default function Recipe() {
+  const {id} = useParams();
+  const url = `http://localhost:3000/recipes/${id}`;
+  const {data: recipe, isPending, error} = useFetch(url);
+  return (
+    <div className='recipe'>
+      {error && <p className='error'>{error}</p>}
+      {isPending && <p className='loading'>Loading...</p>}
+      {recipe && (
+          <>
+            <h2 className='page-title'>
+              {recipe.title}
+            </h2>
+            <p>Takes {recipe.cookingTime} to cook.</p>
+            <ul>
+              {recipe.ingredients.map(ingredient => (
+                <li key={ingredient}>{ingredient}</li>
+              ))}
+            </ul>
+            <p className='method'>{recipe.method}</p>
+          </>
+      )}
+    </div>
+  ) 
+}
+```    
 
-next: https://www.udemy.com/course/build-web-apps-with-react-firebase/learn/lecture/29067040#questions
+![](./images/image5.PNG)
 
+## Create Recipe Form
+
+
+**Create.js**
+
+```js
+export default function Create() {
+  const [title, setTitle] = useState('');
+  const [method, setMethod] = useState('');
+  const [cookingTime, setCookingTime] = useState('');
+
+  const resetForm = () => {
+    setTitle('');
+    setMethod('');
+    setCookingTime('');
+  }
+  const createRecipe = (e) => {
+    e.preventDefault();
+    const recipe = {
+      title,
+      method,
+      cookingTime
+    }
+    console.log(recipe)
+    resetForm();
+  }
+  return (
+    <div className='create'>
+      <h2 className='page-title'>
+        Add a New Recipe
+      </h2>
+      <form onSubmit={createRecipe} >
+        <label>
+          <span>
+            Recipe Title:
+          </span>
+          <input 
+            type='text'
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          <span>
+            Recipe Method:
+          </span>
+          <textarea 
+            value={method}
+            onChange={e => setMethod(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          <span>
+            Cooking Time (Minutes):
+          </span>
+          <input
+            type='number'
+            value={cookingTime}
+            onChange={e => setCookingTime(e.target.value)}
+            required
+          />
+        </label>
+        <button type='submit'>
+          Submit
+        </button>
+      </form>
+    </div>
+  )
+}
+```
+
+### Screenshot 
+![](./images/image6.jpg)
+
+
+Next: 
+https://www.udemy.com/course/build-web-apps-with-react-firebase/learn/lecture/29067524#questions/17633114
 
 
 

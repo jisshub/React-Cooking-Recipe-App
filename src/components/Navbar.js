@@ -10,7 +10,7 @@ export default function Navbar() {
             <Link to="/" className='brand'>
                 <h1>Cooking Ninja</h1>
             </Link>
-            <Link to="/create" >
+            <Link to="/create">
                 Create Recipe
             </Link>
         </nav>
