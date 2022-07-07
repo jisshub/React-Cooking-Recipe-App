@@ -302,8 +302,73 @@ export default function Create() {
 ![](./images/image6.jpg)
 
 
-Next: 
-https://www.udemy.com/course/build-web-apps-with-react-firebase/learn/lecture/29067524#questions/17633114
+## Adding Multiple Ingredients
 
+- Create JSX template for adding multiple ingredients.
+
+**Create.js**
+
+```jsx
+<label>
+  <span>
+    React Ingredients:
+  </span>
+  <div className='ingredients'>
+    <input type='text'/>
+    <button className='add'>Add</button>
+  </div>
+</label>
+```
+- We use **useState** hook to store each single ingredient we add.
+
+```js
+const [newIngredient, setNewIngredient] = useState('');
+```
+
+- We again use **useState** hook to pass all the stored ingredients into a new array.
+
+```js
+const [ingredients, setIngredients] = useState([]);
+```
+
+- Update the template
+
+```jsx
+<label>
+  <span>
+    React Ingredients:
+  </span>
+  <div className='ingredients'>
+    <input 
+      type='text'
+      value={newIngredient}
+      onChange={e => setNewIngredient(e.target.value)}
+      />
+    <button className='add' onClick={addIngredients}>Add</button>
+  </div>
+</label>
+```
+
+**Create.js**
+
+- Define addIngredients function to add new ingredient to the array.
+
+```js
+const addIngredients = (e) => {
+    e.preventDefault();
+    const ing = newIngredient.trim();
+    if (ing && !ingredients.includes(ing)) {
+      // Set the ingredents array to include the new ingredient. 
+      // 1. Use previous state to create a new function. 
+      // 2. Inside that function, create an array. 
+      // 3. Push the new ingredient and previous ingredients into the array. 
+      setIngredients(prevIngredients => [...prevIngredients, ing]);
+    }
+    // Reset the new ingredient input.
+    setNewIngredient('');
+  }
+```
+
+Time: 7:00
 
 
