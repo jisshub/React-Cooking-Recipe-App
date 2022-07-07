@@ -1,7 +1,7 @@
 import './Create.css';
 
 import React from 'react'
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export default function Create() {
   const [title, setTitle] = useState('');
@@ -9,6 +9,7 @@ export default function Create() {
   const [cookingTime, setCookingTime] = useState('');
   const [newIngredient, setNewIngredient] = useState('');
   const [ingredients, setIngredients] = useState([]);
+  const ingredientRef = useRef(null);
 
   const resetForm = () => {
     setTitle('');
@@ -19,14 +20,10 @@ export default function Create() {
     e.preventDefault();
     const ing = newIngredient.trim();
     if (ing && !ingredients.includes(ing)) {
-      // Set the ingredents array to include the new ingredient. 
-      // 1. Use previous state to create a new function. 
-      // 2. Inside that function, create an array. 
-      // 3. Push the new ingredient and previous ingredients into the array. 
-      setIngredients(prevIngredients => [...prevIngredients, ing]);
+      setIngredients(prevIngredients => [...prevIngredients, newIngredient]);
     }
-    // Reset the new ingredient input.
     setNewIngredient('');
+    ingredientRef.current.focus();
   }
   
   const createRecipe = (e) => {
@@ -61,6 +58,21 @@ export default function Create() {
         </label>
         <label>
           <span>
+            React Ingredients:
+          </span>
+          <div className='ingredients'>
+            <input 
+              type='text'
+              value={newIngredient}
+              ref={ingredientRef}
+              onChange={e => setNewIngredient(e.target.value)}
+              />
+            <button className='add' onClick={addIngredients}>Add</button>
+          </div>
+        </label>
+        <p>Current Ingredients: {ingredients.map(ingredient => <em key={ingredient}>{ingredient},</em>)}</p>
+        <label>
+          <span>
             Recipe Method:
           </span>
           <textarea 
@@ -79,19 +91,6 @@ export default function Create() {
             onChange={e => setCookingTime(e.target.value)}
             required
           />
-        </label>
-        <label>
-          <span>
-            React Ingredients:
-          </span>
-          <div className='ingredients'>
-            <input 
-              type='text'
-              value={newIngredient}
-              onChange={e => setNewIngredient(e.target.value)}
-              />
-            <button className='add' onClick={addIngredients}>Add</button>
-          </div>
         </label>
         <button type='submit'>
           Submit

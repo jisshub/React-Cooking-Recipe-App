@@ -357,18 +357,160 @@ const [ingredients, setIngredients] = useState([]);
 const addIngredients = (e) => {
     e.preventDefault();
     const ing = newIngredient.trim();
+    // check if ingredient is not empty and check if ingredient not included in the array.
+    // no duplicate values allowed.
     if (ing && !ingredients.includes(ing)) {
       // Set the ingredents array to include the new ingredient. 
       // 1. Use previous state to create a new function. 
       // 2. Inside that function, create an array. 
       // 3. Push the new ingredient and previous ingredients into the array. 
-      setIngredients(prevIngredients => [...prevIngredients, ing]);
+      setIngredients(prevIngredients => [...prevIngredients, newIngredient]);
     }
     // Reset the new ingredient input.
     setNewIngredient('');
   }
 ```
 
-Time: 7:00
+- using useRef hook to set focus on ingredient input field.
+
+```js
+const ingredientRef = useRef(null);
+
+const addIngredients = (e) => {
+  e.preventDefault();
+  const ing = newIngredient.trim();
+  if (ing && !ingredients.includes(ing)) {
+    setIngredients(prevIngredients => [...prevIngredients, newIngredient]);
+  }
+  setNewIngredient('');
+  ingredientRef.current.focus();
+}
+```
+
+```jsx
+<input 
+  type='text'
+  value={newIngredient}
+  ref={ingredientRef}
+  onChange={e => setNewIngredient(e.target.value)}
+/>
+```
+
+### Screenshot 
+
+![](./images/image8.jpg)
+
+
+### Output ingredients right below the input field
+
+- Output the ingredients we gave underneath the input field.
+- we use map method to cycle through each ingredient and display it.
+
+
+```jsx
+<p>Current Ingredients: {ingredients.map(ingredient => <em key={ingredient}>{ingredient}, </em>)}</p>
+```
+
+## Making POST Request
+
+- On clicking submit add data to a json file.
+- Set options for post request.
+
+**Create.js**
+
+```js
+const [options, setOptions] = useState(null)
+
+const postData = (postData) => {
+    setOptions({
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(postData)
+    })
+}
+```
+
+- Pass method and options into useEffect hook as dependencies.
+
+**useFetch.js**
+
+```js
+export const useFetch = (url, method='GET') => {
+    const [data, setData] = useState(null)
+    const [isPending, setIsPending] = useState(false)
+    const [error, setError] = useState(null)
+    const [options, setOptions] = useState(null)
+    const ref = useRef(false)
+    
+    const postData = (postData) => {
+        setOptions({
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(postData)
+        });
+    };
+    useEffect(() => {
+        ref.current = true
+        const controller = new AbortController()
+        let {signal} = controller
+        const fetchData = async (fetchOptions) => {
+            setIsPending(true)
+        try {
+            const response = await fetch(url, {
+                ...fetchOptions, signal
+            });
+            if (!response.ok) {
+                throw new Error(response.statusText)
+            }
+            const json = await response.json()
+            setIsPending(false)
+            setData(json)
+            setError(null)
+        } catch (error) {
+            if (error.name === 'AbortError' && !ref) {
+                console.log('fetch aborted');
+            } else {
+                setIsPending(false)
+                setError('Could not fetch data')
+            }
+        }
+        }
+        if (method==='GET') {
+            fetchData();
+        }
+        if (method==='POST' && options) {
+            fetchData(options);
+        }
+            
+        fetchData()
+        return () => {
+            ref.current = false;
+            controller.abort()
+        }
+    }, [url, options, method])
+    
+    return {data, isPending, error}
+}
+```
+ 
+## useFetch Hook working
+
+- Imagine if we invoke **useFetch** hook. hook is invoked and url is passed in. 
+- First thing is **useEffect** hook is fired and check is performed on method.
+- Call **fetchData** function to fetch data and return the data and error.
+- If the method is **POST**, we invoke the hook in the component and pass the method as POST, url and options as postData. 
+- **useEffect** hook is fired and check is performed on method.
+- Since method is **POST**, invoke **fetchData()** function and pass the options.
+- In **fetchData** function, we get the options and spread them in to the fetch function along with signal properties.
+- Then it makes the **POST** request for the data.
+- Next we have to use **postData** function inside our **Create** component when a user submits a form.
+
+Time: 8: 40
+
+
 
 
