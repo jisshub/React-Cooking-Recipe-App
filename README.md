@@ -511,6 +511,9 @@ export const useFetch = (url, method='GET') => {
 
 Time: 8: 40
 
+## Making a POST REQUEST
+
+
 
 
 
